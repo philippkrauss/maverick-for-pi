@@ -10,18 +10,25 @@ import java.util.regex.Pattern;
  */
 public class Maverick {
 
+    private final String nativeCommand;
+
+    public Maverick(String nativeCommand) {
+        this.nativeCommand = nativeCommand;
+    }
 
     public TemperatureReading getReading() {
         int probe1 = -1;
         int probe2 = -1;
         try {
-            Process proc = Runtime.getRuntime().exec("/home/pi/maverick/maverick");
+            System.out.println("Executing " + nativeCommand);
+            Process proc = Runtime.getRuntime().exec(nativeCommand);
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             String s;
             String probeString = "";
             while ((s = stdInput.readLine()) != null) {
                 probeString = s;
             }
+            System.out.println("Read: " + probeString);
             Pattern pattern = Pattern.compile("Probe 1:(-?[0-9]+).+Probe 2:(-?[0-9]+)");
             Matcher matcher = pattern.matcher(probeString);
 

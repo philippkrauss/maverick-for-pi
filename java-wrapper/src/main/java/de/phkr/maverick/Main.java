@@ -1,5 +1,6 @@
 package de.phkr.maverick;
 
+import de.phkr.maverick.config.Configuration;
 import de.phkr.maverick.consumer.CsvConsumer;
 import de.phkr.maverick.consumer.ThingSpeakApi;
 
@@ -10,18 +11,12 @@ import java.util.Properties;
 public class Main {
 
     public void execute() throws Exception {
-        String apiKey = "";
-        String path = "";
-        try (InputStream in = getClass().getClassLoader().getResourceAsStream("config.properties")) {
-            Properties props = new Properties();
-            props.load(in);
-            apiKey = props.getProperty("thingspeak.api.key");
-            path = props.getProperty("csv.path");
-        }
+        Configuration configuration = new Configuration();
+        configuration.init();
 
-        Maverick maverick = new Maverick();
-        ThingSpeakApi thingSpeakApi = new ThingSpeakApi(apiKey);
-        CsvConsumer csvConsumer = new CsvConsumer(new File(path));
+        Maverick maverick = new Maverick(configuration.getNativeCommand());
+        ThingSpeakApi thingSpeakApi = new ThingSpeakApi(configuration.getApiKey());
+        CsvConsumer csvConsumer = new CsvConsumer(new File(configuration.getPath()));
         while (true) {
             TemperatureReading reading = maverick.getReading();
             thingSpeakApi.take(reading);
